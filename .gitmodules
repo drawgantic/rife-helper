@@ -1,0 +1,3 @@
+[submodule "rife"]
+	path = rife
+	url = https://github.com/TNTwise/rife-ncnn-vulkan.git
