@@ -105,7 +105,7 @@ def cmd_generate(args: argparse.Namespace) -> None:
 				erp.gen_frame(lo, hi) if args.single else erp.gen_frames(lo, hi)
 				lo.prune()
 
-	if wrap != None and frames.range and (hi := frames.range[1]):
+	if wrap is not None and frames.range and (hi := frames.range[1]):
 		if args.pause:
 			input('\nPress a key to begin offset removal\n')
 		for x in cmn.Frames(args.dir, args.range)[-(int(hi) + 1):]:
@@ -186,17 +186,17 @@ def cmd_run(args: argparse.Namespace) -> None:
 				sub = parser.parse_args(words)
 				if sub.func == cmd_generate:
 					sub.backup = args.backup
-					if args.ease != None:
+					if args.ease is not None:
 						sub.ease = sub.ease or {}
 						sub.ease.update({ k:v for k,v in args.ease.items()
 							if k not in sub.ease })
 					if (r := sub.range) and (x := args.num):
-						sub.range = tuple(l * x if l != None else None for l in r)
+						sub.range = tuple(l * x if l is not None else None for l in r)
 				elif sub.func == cmd_render and sub.fps and args.num:
 					sub.fps *= args.num
 				kw = vars(sub)
 				kw.update({ k:v for k,v in vars(args).items()
-					if k in kw and kw[k] == None })
+					if k in kw and kw[k] is None })
 				if args.pause:
 					input(f'Next: `{line}` Press a key to continue')
 				sub.func(sub)

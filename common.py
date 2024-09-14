@@ -121,7 +121,7 @@ class Interpolator:
 	def __init__(self: Self,
 		ease: dict[str, Any]|None, jobs: int|None, model: str|None, approx: float|None
 	) -> None:
-		self.ease = eas.Easing(**(ease if ease != None else {'flex': 0}))
+		self.ease = eas.Easing(**(ease if ease is not None else {'flex': 0}))
 		self.jobs = jobs or 1
 		self.model = model or 'rife-v4.18'
 		if not os.path.exists(f'{cwd}/rife/models/{self.model}'):
