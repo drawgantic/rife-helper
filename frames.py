@@ -238,10 +238,10 @@ cmd.add_argument('name', help='Video file name')
 opt(cmd, '-l', '--loop', 'End with duplicate of first frame', action='store_true')
 
 cmd = subcommand('x', cmd_multiply, 'Perform multiplication on frame indexes', True)
-cmd.add_argument('num', help='Factor', type=float, nargs='?')
+cmd.add_argument('num', help='Factor', type=eas.Float, nargs='?')
 
 cmd = subcommand('+', cmd_add, 'Perform addition on frame indexes', True)
-cmd.add_argument('num', help='Addend', type=float, nargs='?')
+cmd.add_argument('num', help='Addend', type=eas.Float, nargs='?')
 
 cmd = subcommand('rm', cmd_rm, 'Remove specific frames')
 cmd.add_argument('nums', help='Index or range of indexes in low:high form', nargs='+')
@@ -266,9 +266,8 @@ cmd.add_argument('rem', help='Remainder to compare against', type=int, nargs='?'
 opt(cmd, '-i', '--invert', 'Remove if (index %% div) == rem', action='store_true')
 
 cmd = subcommand('prune', cmd_prune, 'Remove duplicate neighboring frames', True)
-opt(cmd, '-t', '--threshold', 'Image distortion threshold', metavar='0', type=float)
+opt(cmd, '-t', '--threshold', 'Image distortion threshold', metavar='0', type=eas.Float)
 opt(cmd, '-n', '--dryrun', 'Perform a dry run', action='store_true')
-opt(cmd, '-p', '--preserve', 'Preserve the last frame', action='store_true')
 
 cmd = subcommand('gen', cmd_generate, 'Interpolate between existing frames', True,
 	formatter_class=argparse.RawTextHelpFormatter)
@@ -283,14 +282,14 @@ opt(cmd, '-e', '--ease', 'Easing parameters. Use ":" for arg separation\n'
 	't=0  Tangency, Ease-in to ease-out bias (default: 0.5)',
 	metavar='X', nargs='?', type=eas.Dict, const={})
 opt(cmd, '-z', '--zoh', 'Use zero-order hold interpolation', action='store_true')
-opt(cmd, '-a', '--approx', 'Frame approximation threshold', metavar='0', type=float)
+opt(cmd, '-a', '--approx', 'Frame approximation threshold', metavar='0', type=eas.Float)
 opt(cmd, '-p', '--pause', 'Pause before certain events', action='store_const', const=True)
 opt(cmd, '-s', '--single', 'Generate a single frame', action='store_true')
 
 cmd = subcommand('ren', cmd_render, 'Render a video from frames')
 cmd.add_argument('name', help='Video file name', nargs='?')
-opt(cmd, '-f', '--fps', 'Frames per second', metavar='0', type=float)
-opt(cmd, '-t', '--time', 'Time in seconds (supersedes fps)', metavar='0', type=float)
+opt(cmd, '-f', '--fps', 'Frames per second', metavar='0', type=eas.Float)
+opt(cmd, '-t', '--time', 'Time in seconds (supersedes fps)', metavar='0', type=eas.Float)
 opt(cmd, '-l', '--loop', 'Leave out the last frame', action='store_true')
 
 cmd = subcommand('run', cmd_run, 'Run a set of commands from a text file', True)
@@ -301,7 +300,7 @@ opt(cmd, '-j', '--jobs', 'Max number of concurrent processes', metavar='0', type
 opt(cmd, '-l', '--load', 'Reset frames on gen calls', action='store_true')
 opt(cmd, '-m', '--model', 'Flow model', metavar='X')
 opt(cmd, '-e', '--ease', 'Easing parameters', metavar='X', type=eas.Dict)
-opt(cmd, '-x', '--num', 'Math operand', metavar='0', type=float)
+opt(cmd, '-x', '--num', 'Math operand', metavar='0', type=eas.Float)
 opt(cmd, '-p', '--pause', 'Pause after each command', action='store_true')
 if __name__ == '__main__':
 	args = parser.parse_args()
