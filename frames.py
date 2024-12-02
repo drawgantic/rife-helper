@@ -39,8 +39,7 @@ def cmd_prune(args: argparse.Namespace) -> None:
 	frames.mark_for_pruning(args.threshold or 0.015)
 	if args.dryrun:
 		return
-	if args.preserve:
-		frames[-1].key = True
+	frames[-1].key = True
 	for x in frames:
 		x.prune()
 
