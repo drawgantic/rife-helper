@@ -123,9 +123,6 @@ def cmd_extract(args: argparse.Namespace) -> None:
 		os.mkdir(args.dir, 0o755)
 	subprocess.call([ 'ffmpeg', '-i', vid, '-start_number', '0',
 		args.dir + f'%05d.000{cmn.Frame.img}' ])
-	if args.loop:
-		frames = cmn.Frames(args.dir)
-		frames[0].copy(frames[-1].idx + 1)
 
 def cmd_render(args: argparse.Namespace) -> None:
 	frames = cmn.Frames(args.dir)
@@ -235,7 +232,6 @@ subparsers = parser.add_subparsers(required=True)
 
 cmd = subcommand('ext', cmd_extract, 'Extract frames from a video')
 cmd.add_argument('name', help='Video file name')
-opt(cmd, '-l', '--loop', 'End with duplicate of first frame', action='store_true')
 
 cmd = subcommand('x', cmd_multiply, 'Perform multiplication on frame indexes', True)
 cmd.add_argument('num', help='Factor', type=eas.Float, nargs='?')
