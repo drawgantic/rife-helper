@@ -174,7 +174,8 @@ def cmd_run(args: argparse.Namespace) -> None:
 		lines = f.read().splitlines()
 		for line in lines[args.slice or slice(None)]:
 			c = line.find('#')
-			if len(words := line[:c if c >= 0 else None].strip().split(' ')) <= 0:
+			line = line[:c if c >= 0 else None].strip()
+			if len(words := line.split(' ') if line else []) <= 0:
 				continue
 			if words[0] == 'ease':
 				args.ease = args.ease or {}
