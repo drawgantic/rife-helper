@@ -58,11 +58,17 @@ def cmd_generate(args: argparse.Namespace) -> None:
 		last = frames.wrap - 1
 		wrap = frames[last].idx
 		frames[last].remove() # should be a duplicate of the first frame
-		for x in frames[frames.wrap:]:
+		for x in frames[frames.wrap:-1]:
 			x.rename(x.idx + wrap)
+		if (x := frames[-1]) != frames[0]:
+			x.rename(x.idx + wrap)
+		else:
+			x.copy(x.idx + wrap)
+			frames.range = (x.idx, x.idx + wrap)
+
 		if args.pause:
 			input(f'\nOffset of {wrap} applied. Press a key to continue\n')
-		frames = cmn.Frames(args.dir, args.range)
+		frames = cmn.Frames(args.dir, frames.range)
 
 	erp = cmn.Interpolator(args.ease, args.jobs, args.model, args.approx)
 	ease = erp.ease
@@ -104,10 +110,10 @@ def cmd_generate(args: argparse.Namespace) -> None:
 				erp.gen_frame(lo, hi) if args.single else erp.gen_frames(lo, hi)
 				lo.prune()
 
-	if wrap is not None and frames.range and (hi := frames.range[1]):
+	if wrap is not None and args.range and (hi := args.range[1]):
 		if args.pause:
 			input('\nPress a key to begin offset removal\n')
-		for x in cmn.Frames(args.dir, args.range)[-(int(hi) + 1):]:
+		for x in cmn.Frames(args.dir, frames.range)[-(int(hi) + 1):]:
 			x.rename(max(0, x.idx - wrap))
 
 def cmd_extract(args: argparse.Namespace) -> None:
