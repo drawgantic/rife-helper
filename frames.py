@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, argparse, subprocess, common as cmn, easing as eas
+import os, re, argparse, subprocess, common as cmn, easing as eas
 from datetime import datetime
 
 ################################################################################
@@ -175,7 +175,9 @@ def cmd_run(args: argparse.Namespace) -> None:
 		for line in lines[args.slice or slice(None)]:
 			c = line.find('#')
 			line = line[:c if c >= 0 else None].strip()
-			if len(words := line.split(' ') if line else []) <= 0:
+			ptrn = r'(\"[^\"]*\"|[^ ]+)' # text between double quotes or between spaces
+			words = [x.strip('\"') for x in re.findall(ptrn, line)]
+			if len(words) <= 0:
 				continue
 			if words[0] == 'ease':
 				args.ease = args.ease or {}
