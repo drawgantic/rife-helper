@@ -29,10 +29,10 @@ def cmd_clean(args: argparse.Namespace) -> None:
 		fn(i, x)
 
 def cmd_save(args: argparse.Namespace) -> None:
-	cmn.Frames(args.dir, args.range).copy_to(args.backup, args.skip)
+	cmn.Frames(args.dir, args.range).copy_to(args.backup, args.copy)
 
 def cmd_load(args: argparse.Namespace) -> None:
-	cmn.Frames(args.backup, args.range).copy_to(args.dir, args.skip)
+	cmn.Frames(args.backup, args.range).copy_to(args.dir, args.copy)
 
 def cmd_prune(args: argparse.Namespace) -> None:
 	frames = cmn.Frames(args.dir, args.range)
@@ -259,11 +259,11 @@ cmd = subcommand('sort', cmd_sort, 'Reindex frames in alphabetical order', True)
 
 cmd = subcommand('save', cmd_save, 'Save the state of frames to a backup folder', True)
 cmd.add_argument('backup', help='Backup folder', type=cmn.Path, nargs='?')
-opt(cmd, '-s', '--skip', 'Skip the removal step and copy only', action='store_true')
+opt(cmd, '-c', '--copy', 'Copy only, do not revert', action='store_true')
 
 cmd = subcommand('load', cmd_load, 'Load a state of frames from a backup folder', True)
 cmd.add_argument('backup', help='Backup folder', type=cmn.Path, nargs='?')
-opt(cmd, '-s', '--skip', 'Skip the removal step and copy only', action='store_true')
+opt(cmd, '-c', '--copy', 'Copy only, do not revert', action='store_true')
 
 cmd = subcommand('clean', cmd_clean, 'Remove frames with modulo', True)
 cmd.add_argument('div', help='Remove if (index %% div) != rem', type=int, nargs='?')
