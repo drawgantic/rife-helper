@@ -1,5 +1,5 @@
 from math import acos, asin, sqrt, floor, pi
-from typing import Any, Self, Callable, Type
+from typing import Any, Self, Callable
 
 acc = float.fromhex('0x1p48') # for rounding off small inaccuracies
 
