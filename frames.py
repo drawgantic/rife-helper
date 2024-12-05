@@ -79,7 +79,8 @@ def cmd_generate(args: argparse.Namespace) -> None:
 
 	erp = cmn.Interpolator(args.ease, args.jobs, args.model, args.approx)
 	ease = erp.ease
-	s_range = f'Range: {frames.range}\n' if frames.range else ''
+	s_range = 'Range: ' + (
+		str(frames.range or f'({frames[0].idx}, {frames[-1].idx})')) + '\n'
 	if args.zoh:
 		print(f'\n{s_range}Zero-order hold\n')
 		for i in range(len(frames) - 1):
