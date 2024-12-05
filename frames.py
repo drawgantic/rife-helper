@@ -49,7 +49,13 @@ def cmd_generate(args: argparse.Namespace) -> None:
 		cmn.Frames(backup, args.range).copy_to(args.dir)
 		if args.pause:
 			input(f'\nBackup loaded. Press a key to continue\n')
+
 	frames = cmn.Frames(args.dir, args.range)
+	if args.open:
+		frames[-2].rename(frames[-1].idx - 1)
+		frames[:] = frames[:-1]
+		frames.range = (frames[0].idx, frames[-1].idx)
+
 	if len(frames) < 2:
 		raise ValueError('Directory must contain at least 2 images')
 
@@ -72,7 +78,7 @@ def cmd_generate(args: argparse.Namespace) -> None:
 
 	erp = cmn.Interpolator(args.ease, args.jobs, args.model, args.approx)
 	ease = erp.ease
-	s_range = f'Range: {args.range}\n' if args.range else ''
+	s_range = f'Range: {frames.range}\n' if frames.range else ''
 	if args.zoh:
 		print(f'\n{s_range}Zero-order hold\n')
 		for i in range(len(frames) - 1):
@@ -290,6 +296,7 @@ opt(cmd, '-z', '--zoh', 'Use zero-order hold interpolation', action='store_true'
 opt(cmd, '-a', '--approx', 'Frame approximation threshold', metavar='0', type=eas.Float)
 opt(cmd, '-p', '--pause', 'Pause before certain events', action='store_const', const=True)
 opt(cmd, '-s', '--single', 'Generate a single frame', action='store_true')
+opt(cmd, '-o', '--open', 'Use a half-open interval', action='store_true')
 
 cmd = subcommand('ren', cmd_render, 'Render a video from frames')
 cmd.add_argument('name', help='Video file name', nargs='?')
