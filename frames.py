@@ -215,7 +215,7 @@ def Pair(s: str) -> tuple[float, float]:
 		raise ValueError('Pair must be exactly 2 values')
 	return t
 
-def Range(s: str) -> tuple[float|None, float|None]:
+def Range(s: str) -> cmn.Range:
 	t = [float(x) if x else None for x in s.split(':')]
 	if len(t) != 2:
 		raise ValueError('Range cannot exceed 2 values')

@@ -59,10 +59,10 @@ class Frame:
 		if not self.key:
 			self.remove()
 
+Range = tuple[float|None, float|None]
+
 class Frames(list[Frame]):
-	def __init__(self: Self,
-		head: Path, r: tuple[float|None, float|None] | None = None
-	) -> None:
+	def __init__(self: Self, head: Path, r: Range | None = None) -> None:
 		frames: list[Frame] = []
 		self.range = r
 		self.wrap = None
