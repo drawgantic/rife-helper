@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os, re, argparse, subprocess, common as cmn, easing as eas
+from threading import Thread, active_count
 from datetime import datetime
 
 ################################################################################
@@ -86,14 +87,25 @@ def cmd_generate(args: argparse.Namespace) -> None:
 			for i in range(int(lo.idx + 1), int(hi.idx)):
 				lo.copy(i)
 	else:
+		threads: list[Thread] = []
+		func = (cmn.Interpolator.gen_frame if args.single
+			else cmn.Interpolator.gen_frames)
+
+		def process(lo: cmn.Frame, hi: cmn.Frame):
+			if active_count() < erp.jobs:
+				t = Thread(target=func, args=(erp, lo, hi))
+				t.start()
+				threads.append(t)
+			else:
+				func(erp, lo, hi)
+
 		print(f'\n{s_range}Model: {erp.model}, Jobs: {erp.jobs}\n{ease.info()}\n')
 		if ease.segmented:
 			for i in range(len(frames) - 1):
 				lo, hi = frames[i], frames[i + 1]
 				lo.pct, hi.pct = 0.0, 1.0
 				ease.set_idx_range(lo.idx, hi.idx)
-				erp.gen_frame(lo, hi) if args.single else erp.gen_frames(lo, hi)
-				lo.prune()
+				process(lo, hi)
 		else:
 			lo, hi = frames[0], frames[-1]
 			lo.pct, hi.pct = 0.0, 1.0
@@ -112,9 +124,11 @@ def cmd_generate(args: argparse.Namespace) -> None:
 				input('\nReindexed for easing. Press a key to continue\n')
 
 			for i in range(len(frames) - 1):
-				lo, hi = frames[i], frames[i + 1]
-				erp.gen_frame(lo, hi) if args.single else erp.gen_frames(lo, hi)
-				lo.prune()
+				process(frames[i], frames[i + 1])
+		for t in threads:
+			t.join()
+		for x in frames:
+			x.prune()
 
 	if wrap is not None and args.range and (hi := args.range[1]):
 		if args.pause:
