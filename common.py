@@ -85,10 +85,10 @@ class Frames(list[Frame]):
 				frames = [x for x in frames if r[0] <= x.idx and x.idx <= r[1]]
 		super().__init__(frames)
 
-	def copy_to(self: Self, to: Path, copy_only: bool = False) -> None:
+	def copy_to(self: Self, to: Path, lazy: bool = False) -> None:
 		if not os.path.exists(to):
 			os.mkdir(to, 0o755)
-		elif not copy_only:
+		elif not lazy:
 			for x in Frames(to, self.range):
 				x.remove()
 		for x in self:

@@ -30,10 +30,10 @@ def cmd_clean(args: argparse.Namespace) -> None:
 		fn(i, x)
 
 def cmd_save(args: argparse.Namespace) -> None:
-	cmn.Frames(args.dir, args.range).copy_to(args.backup, args.copy)
+	cmn.Frames(args.dir, args.range).copy_to(args.backup, args.lazy)
 
 def cmd_load(args: argparse.Namespace) -> None:
-	cmn.Frames(args.backup, args.range).copy_to(args.dir, args.copy)
+	cmn.Frames(args.backup, args.range).copy_to(args.dir, args.lazy)
 
 def cmd_prune(args: argparse.Namespace) -> None:
 	frames = cmn.Frames(args.dir, args.range)
@@ -280,11 +280,11 @@ cmd = subcommand('sort', cmd_sort, 'Reindex frames in alphabetical order', True)
 
 cmd = subcommand('save', cmd_save, 'Save the state of frames to a backup folder', True)
 cmd.add_argument('backup', help='Backup folder', type=cmn.Path, nargs='?')
-opt(cmd, '-c', '--copy', 'Copy only, do not revert', action='store_true')
+opt(cmd, '-z', '--lazy', 'Copy only, do not clean range beforehand', action='store_true')
 
 cmd = subcommand('load', cmd_load, 'Load a state of frames from a backup folder', True)
 cmd.add_argument('backup', help='Backup folder', type=cmn.Path, nargs='?')
-opt(cmd, '-c', '--copy', 'Copy only, do not revert', action='store_true')
+opt(cmd, '-z', '--lazy', 'Copy only, do not clean range beforehand', action='store_true')
 
 cmd = subcommand('clean', cmd_clean, 'Remove frames with modulo', True)
 cmd.add_argument('div', help='Remove if (index %% div) != rem', type=int, nargs='?')
@@ -307,7 +307,7 @@ opt(cmd, '-e', '--ease', 'Easing parameters. Use ":" for arg separation\n'
 	'f=0  Flex, 1.0=in-out, 0.0=linear, -1.0=out-in (default: 1.0)\n'
 	't=0  Tangency, Ease-in to ease-out bias (default: 0.5)',
 	metavar='X', nargs='?', type=eas.Dict, const={})
-opt(cmd, '-z', '--zoh', 'Use zero-order hold interpolation', action='store_true')
+opt(cmd, '-z', '--zoh', 'Use zero-order hold (duplicate frames)', action='store_true')
 opt(cmd, '-a', '--approx', 'Frame approximation threshold', metavar='0', type=eas.Float)
 opt(cmd, '-p', '--pause', 'Pause before certain events', action='store_const', const=True)
 opt(cmd, '-s', '--single', 'Generate a single frame', action='store_true')

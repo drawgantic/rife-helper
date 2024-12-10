@@ -10,7 +10,6 @@ Many sub-commands also accept the argument `-r 1:2, --range 1:2`, which specifie
 ### `ext [-l] name`
 ### Extract frames from a video
 - `name` Video file name
-- `-l, --loop` End with duplicate of first frame
 
 --------------------------------------------------------------------------------
 ### `x [-r 1:2] [num]`
@@ -41,13 +40,13 @@ Many sub-commands also accept the argument `-r 1:2, --range 1:2`, which specifie
 ### `save [-r 1:2] [-s] [backup]`
 ### Save the state of frames to a backup folder
 - `backup` Backup folder (default: `./backup/`)
-- `-s, --skip` Skip the removal step and copy only
+- `-z, --lazy` Copy only, do not clean range beforehand
 
 --------------------------------------------------------------------------------
 ### `load [-r 1:2] [-s] [backup]`
 ### Load a state of frames from a backup folder
 - `backup` Backup folder (default: `./backup/`)
-- `-s, --skip` Skip the removal step and copy only
+- `-z, --lazy` Copy only, do not clean range beforehand
 
 --------------------------------------------------------------------------------
 ### `clean [-r 1:2] [-i] [div] [rem]`
@@ -61,7 +60,6 @@ Many sub-commands also accept the argument `-r 1:2, --range 1:2`, which specifie
 ### Remove duplicate neighboring frames
 - `-t 0, --threshold 0` Image distortion threshold
 - `-n, --dryrun` Perform a dry run
-- `-p, --preserve` Preserve the last frame
 
 --------------------------------------------------------------------------------
 ### `gen [-r 1:2] [-j 0] [-l [X]] [-m X] [-e [X]] [-z] [-a 0] [-p] [-s]`
@@ -74,10 +72,11 @@ Many sub-commands also accept the argument `-r 1:2, --range 1:2`, which specifie
   - `seg` Segmented, separate easings between keyframes
   - `f=0` Flex, 1.0=in-out, 0.0=linear, -1.0=out-in (default: 1.0)
   - `t=0` Tangency, Ease-in to ease-out bias (default: 0.5)
-- `-z, --zoh` Use zero-order hold interpolation
+- `-z, --zoh` Use zero-order hold (duplicate frames)
 - `-a 0, --approx 0` Frame approximation threshold
 - `-p, --pause` Pause before certain events
 - `-s, --single` Generate a single frame
+- `-o, --open` Use a half-open interval
 
 --------------------------------------------------------------------------------
 ### `ren [-f 0] [-t 0] [-l] [name]`
@@ -105,7 +104,7 @@ Many sub-commands also accept the argument `-r 1:2, --range 1:2`, which specifie
 - `model X` Set the default flow model
 - `pause` Pause at a specific point in the run-script
 
-Comments can be added to run-scripts with `#'.
+Comments can be added to run-scripts with `#`.
 
 The `run` command works by updating each sub-command's dictionary with its own dictionary, but only if no arg was already specified. So if the `run` command and some other command share an arg with the same name, then that arg can have a default value set for it.
 
