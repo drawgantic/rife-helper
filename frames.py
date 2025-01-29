@@ -23,7 +23,7 @@ def cmd_sort(args: argparse.Namespace) -> None:
 
 def cmd_clean(args: argparse.Namespace) -> None:
 	d, r = args.div, args.rem or 0
-	fn = ( (lambda _, x: x.remove()) if not d
+	fn = ( (lambda _, x: x.remove()) if d is None
 		else (lambda i, x: x.remove() if i % d == r else None) if args.invert
 		else (lambda i, x: x.remove() if i % d != r else None) )
 	for i, x in enumerate(cmn.Frames(args.dir, args.range)):
@@ -159,7 +159,7 @@ def cmd_render(args: argparse.Namespace) -> None:
 		probe = cmn.ffprobe(args.name)
 		vinfo = next((s for s in probe['streams'] if s['codec_type'] == 'video'), None)
 		ainfo = next((s for s in probe['streams'] if s['codec_type'] == 'audio'), None)
-		if not vinfo:
+		if vinfo is None:
 			exit('file exists but is not a video')
 		fps = fps or (len(frames) / float(vinfo['duration']))
 	fps = fps or 10
@@ -170,7 +170,7 @@ def cmd_render(args: argparse.Namespace) -> None:
 	name, ext = os.path.splitext(args.name)
 	dt_string = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 	video = f'{name}_{round(fps)}fps_{dt_string}{ext or '.mp4'}'
-	audio = f'{name}.{ainfo["codec_name"]}' if ainfo else None
+	audio = f'{name}.{ainfo["codec_name"]}' if ainfo is not None else None
 	cmn.render(args.dir, fps, video, audio)
 	print(f'\nWritten to {video}\n')
 	if args.loop:
@@ -243,7 +243,7 @@ def Range(s: str) -> cmn.Range:
 	return (t[0], t[1])
 
 def Slice(s: str) -> slice:
-	return slice(*(int(x) if x else None for x in s.split(':')))
+	return slice(*(int(x) if x is not None else None for x in s.split(':')))
 
 def opt(p: argparse.ArgumentParser, s: str, l: str, h: str, **kwargs) -> None:
 	p.add_argument(s, l, help=h, **kwargs)
