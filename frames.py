@@ -53,9 +53,17 @@ def cmd_generate(args: argparse.Namespace) -> None:
 
 	frames = cmn.Frames(args.dir, args.range)
 	if args.open:
+		old_end = frames[-2].idx
 		frames[-2].rename(frames[-1].idx - 1)
 		frames[:] = frames[:-1]
 		frames.range = (frames[0].idx, frames[-1].idx)
+
+		b = frames[0].idx
+		m = (frames[-1].idx - b) / (old_end - b)
+		for x in frames[1:-1]:
+			x.rename(m * (x.idx - b) + b)
+		if args.pause:
+			input(f'\nFrames stretched. Press a key to continue\n')
 
 	if len(frames) < 2:
 		raise ValueError('Directory must contain at least 2 images')
