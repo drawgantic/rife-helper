@@ -151,12 +151,12 @@ def cmd_extract(args: argparse.Namespace) -> None:
 	probe = cmn.ffprobe(vid)
 	# extract audio if it exists
 	if ainfo := next((s for s in probe['streams'] if s['codec_type'] == 'audio'), None):
-		subprocess.call([ 'ffmpeg', '-i', vid, '-vn', '-acodec', 'copy', '-y',
+		subprocess.run([ 'ffmpeg', '-i', vid, '-vn', '-acodec', 'copy', '-y',
 			f'{vname}.{ainfo["codec_name"]}' ])
 	# extract frames
 	if not os.path.exists(args.dir):
 		os.mkdir(args.dir, 0o755)
-	subprocess.call([ 'ffmpeg', '-i', vid, '-start_number', '0',
+	subprocess.run([ 'ffmpeg', '-i', vid, '-start_number', '0',
 		args.dir + f'%05d.000{cmn.Frame.img}' ])
 
 def cmd_render(args: argparse.Namespace) -> None:

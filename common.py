@@ -137,7 +137,7 @@ class Interpolator:
 		def fmt(num):
 			return f'%.{ 6 - len(str(int(num))) }f' % num
 		print(f'{fmt(lo.idx)}\033[92m {fmt(mid.idx)}\033[0m {fmt(hi.idx)}')
-		subprocess.call([ f'{cwd}/rife/build/rife-ncnn-vulkan',
+		subprocess.run([ f'{cwd}/rife/build/rife-ncnn-vulkan',
 			'-m', f'{cwd}/rife/models/{self.model}',
 			'-0', lo.head + lo.tail,
 			'-1', hi.head + hi.tail,
@@ -189,4 +189,4 @@ def render(head: Path, fps: float, video: str, audio: str | None = None) -> None
 		'-movflags', 'faststart',
 		video,
 	]
-	subprocess.call(cmd)
+	subprocess.run(cmd)
