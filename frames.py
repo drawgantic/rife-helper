@@ -215,9 +215,20 @@ def cmd_rm(args: argparse.Namespace) -> None:
 			cmn.Frame(float(a[0]), args.dir).remove()
 
 def cmd_mv(args: argparse.Namespace) -> None:
-	do = cmn.Frame.copy if args.copy else cmn.Frame.rename
+	frames, indexes = [], []
 	for arg in args.nums:
-		do(cmn.Frame(arg[0], args.dir), arg[1])
+		frames.append(cmn.Frame(arg[0], args.dir))
+		indexes.append(arg[1])
+
+	if args.copy:
+		for i in range(len(frames)):
+			frames[i].copy(indexes[i])
+	else:
+		# give temporary names first to avoid naming collisions
+		for i in range(len(frames)):
+			frames[i].rename(indexes[i], temp=True)
+		for i in range(len(frames)):
+			frames[i].rename(indexes[i], temp=False)
 
 def cmd_run(args: argparse.Namespace) -> None:
 	# text commands are just like normal commands, minus the call to this file
