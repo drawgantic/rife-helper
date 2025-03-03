@@ -128,6 +128,7 @@ class Interpolator:
 			raise ValueError('Flow model does not exist')
 		self.approx = approx or 0.125
 		self.margin = 1 + self.approx * 2
+		self.error = False
 
 	def gen_frame(self: Self, lo: Frame, hi: Frame) -> Frame:
 		pct = (lo.pct + hi.pct) / 2
@@ -137,15 +138,20 @@ class Interpolator:
 		def fmt(num):
 			return f'%.{ 6 - len(str(int(num))) }f' % num
 		print(f'{fmt(lo.idx)}\033[92m {fmt(mid.idx)}\033[0m {fmt(hi.idx)}')
-		subprocess.run([ f'{cwd}/rife/build/rife-ncnn-vulkan',
+		result = subprocess.run([ f'{cwd}/rife/build/rife-ncnn-vulkan',
 			'-m', f'{cwd}/rife/models/{self.model}',
 			'-0', lo.head + lo.tail,
 			'-1', hi.head + hi.tail,
 			'-o', mid.head + mid.tail,
-		])
+		], capture_output=True, text=True)
+		if result.returncode != 0:
+			print(result.stderr.splitlines()[-1])
+			self.error = True
 		return mid
 
 	def gen_frames(self: Self, lo: Frame, hi: Frame) -> None:
+		if self.error:
+			return
 		dif = abs(hi.idx - lo.idx)
 		if ( int(lo.idx) == int(hi.idx) # ex: 2 and 2.9 (no new keyframes)
 			or (lo.key and hi.key and dif <= self.margin) # ex: 1.9 and 3.1

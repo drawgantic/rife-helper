@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, re, argparse, subprocess, common as cmn, easing as eas
+import os, re, sys, argparse, subprocess, common as cmn, easing as eas
 from threading import Thread, active_count
 from datetime import datetime
 
@@ -138,6 +138,8 @@ def cmd_generate(args: argparse.Namespace) -> None:
 			t.join()
 		for x in frames:
 			x.prune()
+		if erp.error:
+			sys.exit('RIFE encountered an error. Aborting')
 
 	if wrap is not None and args.range and (hi := args.range[1]):
 		if args.pause:
@@ -168,7 +170,7 @@ def cmd_render(args: argparse.Namespace) -> None:
 		vinfo = next((s for s in probe['streams'] if s['codec_type'] == 'video'), None)
 		ainfo = next((s for s in probe['streams'] if s['codec_type'] == 'audio'), None)
 		if vinfo is None:
-			exit('file exists but is not a video')
+			sys.exit('file exists but is not a video')
 		fps = fps or (len(frames) / float(vinfo['duration']))
 	fps = fps or 10
 
