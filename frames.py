@@ -44,6 +44,26 @@ def cmd_prune(args: argparse.Namespace) -> None:
 	for x in frames:
 		x.prune()
 
+def cmd_weigh(args: argparse.Namespace) -> None:
+	msg = ''
+	for r in args.ranges:
+		frames = cmn.Frames(args.dir, r)
+		diffs = frames.mark_for_pruning(0)
+		total = sum(diffs)
+		accum = 0
+		line = ''
+		b = frames[0].idx
+		m = frames[-1].idx - b
+		for i in range(len(diffs) - 1):
+			accum += diffs[i]
+			old_idx = round(frames[i + 1].idx / 0.01) * 0.01
+			new_idx = round((m * (accum / total) + b) / 0.01) * 0.01
+			if old_idx != new_idx:
+				line += ' %g:%g' % (old_idx, new_idx)
+		if line != '':
+			msg += f'\nmv{line}'
+	print(msg)
+
 def cmd_generate(args: argparse.Namespace) -> None:
 	if args.load:
 		backup = args.load if type(args.load) == cmn.Path else args.backup
@@ -304,6 +324,9 @@ opt(cmd, '-i', '--invert', 'Remove if (index %% div) == rem', action='store_true
 cmd = subcommand('prune', cmd_prune, 'Remove duplicate neighboring frames', True)
 opt(cmd, '-t', '--threshold', 'Image distortion threshold', metavar='0', type=eas.Float)
 opt(cmd, '-n', '--dryrun', 'Perform a dry run', action='store_true')
+
+cmd = subcommand('weigh', cmd_weigh, 'Suggest indexes based on neighboring distortion')
+cmd.add_argument('ranges', help='Frame index ranges', nargs='+', type=Range)
 
 cmd = subcommand('gen', cmd_generate, 'Interpolate between existing frames', True,
 	formatter_class=argparse.RawTextHelpFormatter)

@@ -62,6 +62,11 @@ Many sub-commands also accept the argument `-r 1:2, --range 1:2`, which specifie
 - `-n, --dryrun` Perform a dry run
 
 --------------------------------------------------------------------------------
+### `weigh`
+### Suggest indexes based on neighboring distortion
+- `ranges` Frame index ranges
+
+--------------------------------------------------------------------------------
 ### `gen [-r 1:2] [-j 0] [-l [X]] [-m X] [-e [X]] [-z] [-a 0] [-p] [-s]`
 ### Interpolate between existing frames
 - `-j 0, --jobs 0` Max number of concurrent processes

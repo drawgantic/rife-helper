@@ -23,6 +23,7 @@ class Ext(str):
 class Frame:
 	img = Ext('.png')
 	fmt = '%09.3f' + img
+
 	def __init__(self: Self, f: float, head: Path, **kwargs) -> None:
 		self.idx = f
 		self.head = head
@@ -94,18 +95,17 @@ class Frames(list[Frame]):
 		for x in self:
 			x.copy(to)
 
-	def mark_for_pruning(self: Self, threshold: float) -> int:
-		min_gap = 5000 # just an arbitrary large number to start with
+	def mark_for_pruning(self: Self, threshold: float) -> list[float]:
+		diffs: list[float] = []
 		k = 0 # current keyframe index
 		key = Image(filename = self[k].head + self[k].tail)
 		for i in range(1, len(self)):
 			img = Image(filename = self[i].head + self[i].tail)
 			diff = key.get_image_distortion(img, metric = 'root_mean_square')
+			diffs.append(diff)
 			s = f'{int(self[k].idx)},%s{int(self[i].idx)}: {diff}\033[0m'
 			if diff >= threshold:
 				color = '\033[0m'
-				if (gap := i - k) < min_gap:
-					min_gap = gap
 				key.close()
 				key = img
 				k = i
@@ -115,7 +115,7 @@ class Frames(list[Frame]):
 				img.close()
 			print(s % color)
 		key.close()
-		return min_gap
+		return diffs
 
 class Interpolator:
 	def __init__(self: Self,
