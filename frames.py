@@ -182,11 +182,12 @@ def cmd_extract(args: argparse.Namespace) -> None:
 		args.dir + f'%05d.000{cmn.Frame.img}' ])
 
 def cmd_render(args: argparse.Namespace) -> None:
+	source = args.name if args.source is None else args.source
 	frames = cmn.Frames(args.dir)
 	fps = (len(frames) / args.time) if args.time else args.fps
 	ainfo = None
-	if os.path.isfile(args.name):
-		probe = cmn.ffprobe(args.name)
+	if os.path.isfile(source):
+		probe = cmn.ffprobe(source)
 		vinfo = next((s for s in probe['streams'] if s['codec_type'] == 'video'), None)
 		ainfo = next((s for s in probe['streams'] if s['codec_type'] == 'audio'), None)
 		if vinfo is None:
@@ -198,9 +199,10 @@ def cmd_render(args: argparse.Namespace) -> None:
 		frames[-1].rename(frames[-1].idx, temp=True)
 	# render video
 	name, ext = os.path.splitext(args.name)
+	src = os.path.splitext(source)[0]
 	dt_string = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 	video = f'{name}_{round(fps)}fps_{dt_string}{ext or '.mp4'}'
-	audio = f'{name}.{ainfo["codec_name"]}' if ainfo is not None else None
+	audio = f'{src}.{ainfo["codec_name"]}' if ainfo is not None else None
 	cmn.render(args.dir, fps, video, audio)
 	print(f'\nWritten to {video}\n')
 	if args.loop:
@@ -362,6 +364,7 @@ cmd.add_argument('name', help='Video file name', nargs='?')
 opt(cmd, '-f', '--fps', 'Frames per second', metavar='0', type=eas.Float)
 opt(cmd, '-t', '--time', 'Time in seconds (supersedes fps)', metavar='0', type=eas.Float)
 opt(cmd, '-l', '--loop', 'Leave out the last frame', action='store_true')
+opt(cmd, '-s', '--source', 'Reference video', metavar='X')
 
 cmd = subcommand('run', cmd_run, 'Run a set of commands from a text file', True)
 cmd.add_argument('text', help='Text file name')
