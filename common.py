@@ -76,7 +76,10 @@ class Frames(list[Frame]):
 		if len(frames) < 2:
 			return super().__init__(frames)
 		if r:
-			r = (r[0] or frames[0].idx, r[1] or frames[-1].idx)
+			r = (
+				r[0] if r[0] is not None else frames[0].idx,
+		  		r[1] if r[1] is not None else frames[-1].idx,
+			)
 			if r[0] >= r[1]:
 				end = [x for x in frames if x.idx >= r[0]]
 				beg = [x for x in frames if x.idx <= r[1]]
