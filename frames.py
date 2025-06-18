@@ -32,10 +32,10 @@ def cmd_clean(args: argparse.Namespace) -> None:
 		fn(i, x)
 
 def cmd_save(args: argparse.Namespace) -> None:
-	cmn.Frames(args.dir, args.range).copy_to(args.backup, args.lazy)
+	cmn.Frames(args.dir, args.range).copy_to(args.backup, args.lazy, args.offset)
 
 def cmd_load(args: argparse.Namespace) -> None:
-	cmn.Frames(args.backup, args.range).copy_to(args.dir, args.lazy)
+	cmn.Frames(args.backup, args.range).copy_to(args.dir, args.lazy, args.offset)
 
 def cmd_prune(args: argparse.Namespace) -> None:
 	frames = cmn.Frames(args.dir, args.range)
@@ -330,10 +330,12 @@ cmd = subcommand('sort', cmd_sort, 'Reindex frames in alphabetical order', True)
 cmd = subcommand('save', cmd_save, 'Save the state of frames to a backup folder', True)
 cmd.add_argument('backup', help='Backup folder', type=cmn.Path, nargs='?')
 opt(cmd, '-z', '--lazy', 'Copy only, do not clean range beforehand', action='store_true')
+opt(cmd, '-o', '--offset', 'Index offset', metavar='0', type=eas.Float)
 
 cmd = subcommand('load', cmd_load, 'Load a state of frames from a backup folder', True)
 cmd.add_argument('backup', help='Backup folder', type=cmn.Path, nargs='?')
 opt(cmd, '-z', '--lazy', 'Copy only, do not clean range beforehand', action='store_true')
+opt(cmd, '-o', '--offset', 'Index offset', metavar='0', type=eas.Float)
 
 cmd = subcommand('clean', cmd_clean, 'Remove frames with modulo', True)
 cmd.add_argument('div', help='Remove if (index %% div) != rem', type=int, nargs='?')

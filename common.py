@@ -43,8 +43,13 @@ class Frame:
 			print('rename: ' + str(e))
 		self.tail = s
 
-	def copy(self: Self, arg: Path | float) -> None:
-		new = arg + self.tail if type(arg) == Path else self.head + (Frame.fmt % arg)
+	def copy(self: Self, arg: Path|float, offset: float|None = None) -> None:
+		o = offset is not None
+		new = (arg + (Frame.fmt % (self.idx + offset) if o else self.tail)
+			if type(arg) == Path else ( # arg is a float
+				self.head + (Frame.fmt % (arg + (offset if o else 0))) # type: ignore
+			)
+		)
 		try:
 			shutil.copyfile(self.head + self.tail, new)
 		except Exception as e:
@@ -89,14 +94,21 @@ class Frames(list[Frame]):
 				frames = [x for x in frames if r[0] <= x.idx and x.idx <= r[1]]
 		super().__init__(frames)
 
-	def copy_to(self: Self, to: Path, lazy: bool = False) -> None:
+	def copy_to(
+		self: Self, to: Path, lazy: bool = False, offset: float|None = None
+	) -> None:
 		if not os.path.exists(to):
 			os.mkdir(to, 0o755)
 		elif not lazy:
-			for x in Frames(to, self.range):
+			o = offset if offset is not None else 0
+			r = (
+				(self.range[0] + o) if self.range[0] is not None else None,
+				(self.range[1] + o) if self.range[1] is not None else None,
+			) if self.range is not None else None
+			for x in Frames(to, r):
 				x.remove()
 		for x in self:
-			x.copy(to)
+			x.copy(to, offset)
 
 	def mark_for_pruning(self: Self, threshold: float) -> list[float]:
 		diffs: list[float] = []
