@@ -7,7 +7,7 @@ def Float(s: str) -> float:
 	x = s.split('/')
 	return float(x[0]) / float(x[1]) if len(x) == 2 else float(s)
 
-def Dict(s: str | None) -> dict[str, Any]:
+def Dict(s: str|None) -> dict[str, Any]:
 	kwargs: dict[str, Any] = {}
 	if not s: return kwargs
 	for arg in [x.split('=') for x in s.split(':')]:

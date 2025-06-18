@@ -68,7 +68,7 @@ class Frame:
 Range = tuple[float|None, float|None]
 
 class Frames(list[Frame]):
-	def __init__(self: Self, head: Path, r: Range | None = None) -> None:
+	def __init__(self: Self, head: Path, r: Range|None = None) -> None:
 		frames: list[Frame] = []
 		self.range = r
 		self.wrap = None
@@ -191,7 +191,7 @@ def ffprobe(file: str) -> dict[str, Any]:
 		raise RuntimeError(f'An error occurred while probing {file}')
 	return json.loads(probe.stdout)
 
-def render(head: Path, fps: float, video: str, audio: str | None = None) -> None:
+def render(head: Path, fps: float, video: str, audio: str|None = None) -> None:
 	cmd = [ 'ffmpeg', '-framerate', str(fps), '-pattern_type', 'glob',
 		'-i', f'{head}*{Frame.img}' ]
 	if audio: cmd += ['-i', audio]

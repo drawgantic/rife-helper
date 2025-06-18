@@ -93,7 +93,7 @@ def cmd_generate(args: argparse.Namespace) -> None:
 	if len(frames) < 2:
 		raise ValueError('Directory must contain at least 2 images')
 
-	wrap: float | None = None
+	wrap: float|None = None
 	if type(frames.wrap) == int:
 		last = frames.wrap - 1
 		wrap = frames[last].idx
