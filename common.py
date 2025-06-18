@@ -80,7 +80,7 @@ class Frames(list[Frame]):
 				r[0] if r[0] is not None else frames[0].idx,
 		  		r[1] if r[1] is not None else frames[-1].idx,
 			)
-			if r[0] >= r[1]:
+			if r[0] > r[1]:
 				end = [x for x in frames if x.idx >= r[0]]
 				beg = [x for x in frames if x.idx <= r[1]]
 				self.wrap = len(end)
