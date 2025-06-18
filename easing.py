@@ -4,7 +4,8 @@ from typing import Any, Self, Callable
 acc = float.fromhex('0x1p48') # for rounding off small inaccuracies
 
 def Float(s: str) -> float:
-	return float(x[0]) / float(x[1]) if len(x := s.split('/')) == 2 else float(s)
+	x = s.split('/')
+	return float(x[0]) / float(x[1]) if len(x) == 2 else float(s)
 
 def Dict(s: str | None) -> dict[str, Any]:
 	kwargs: dict[str, Any] = {}
@@ -52,7 +53,8 @@ class Easing:
 		return (idx - self.intercept) / self.slope
 
 	def info(self: Self) -> str:
-		s = 'Easing: ' + (name := self.func.__name__)
+		name = self.func.__name__
+		s = 'Easing: ' + name
 		if name != 'linear':
 			s += (', segmented' if self.segmented else '')
 			if not name.startswith('sine'):
@@ -69,7 +71,7 @@ class Easing:
 		x -= self.tan
 		return (-b + sqrt(b*b + 4*a*x)) / (2*a) + self.tan
 
-	def root(self: Self, x: float):
+	def root(self: Self, x: float) -> float:
 		a = self.amp1 if x < self.tan else self.amp2
 		b = self.flex + 1
 		x -= self.tan

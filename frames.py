@@ -8,13 +8,15 @@ from datetime import datetime
 # Command Functions
 
 def cmd_multiply(args: argparse.Namespace) -> None:
+	a = args.num or 1
 	f = cmn.Frames(args.dir, args.range)
-	for x in (f if (a := args.num or 1) < 1 else reversed(f)):
+	for x in (f if a < 1 else reversed(f)):
 		x.rename(x.idx * a)
 
 def cmd_add(args: argparse.Namespace) -> None:
+	a = args.num or 0
 	f = cmn.Frames(args.dir, args.range)
-	for x in (f if (a := args.num or 0) < 0 else reversed(f)):
+	for x in (f if a < 0 else reversed(f)):
 		x.rename(x.idx + a)
 
 def cmd_sort(args: argparse.Namespace) -> None:
@@ -95,7 +97,9 @@ def cmd_generate(args: argparse.Namespace) -> None:
 		frames[last].remove() # should be a duplicate of the first frame
 		for x in frames[frames.wrap:-1]:
 			x.rename(x.idx + wrap)
-		if (x := frames[-1]) != frames[0]:
+
+		x = frames[-1]
+		if x != frames[0]:
 			x.rename(x.idx + wrap)
 		else:
 			x.copy(x.idx + wrap)
@@ -161,7 +165,8 @@ def cmd_generate(args: argparse.Namespace) -> None:
 		if erp.error:
 			sys.exit('RIFE encountered an error. Aborting')
 
-	if wrap is not None and args.range and (hi := args.range[1]):
+	hi = args.range[1] if args.range is not None else None
+	if wrap is not None and hi is not None:
 		if args.pause:
 			input('\nPress a key to begin offset removal\n')
 		for x in cmn.Frames(args.dir, frames.range)[-(int(hi) + 1):]:
@@ -172,7 +177,8 @@ def cmd_extract(args: argparse.Namespace) -> None:
 	vname, _ = os.path.splitext(vid)
 	probe = cmn.ffprobe(vid)
 	# extract audio if it exists
-	if ainfo := next((s for s in probe['streams'] if s['codec_type'] == 'audio'), None):
+	ainfo = next((s for s in probe['streams'] if s['codec_type'] == 'audio'), None)
+	if ainfo is not None:
 		subprocess.run([ 'ffmpeg', '-i', vid, '-vn', '-acodec', 'copy', '-y',
 			f'{vname}.{ainfo["codec_name"]}' ])
 	# extract frames
@@ -259,7 +265,8 @@ def cmd_run(args: argparse.Namespace) -> None:
 						sub.ease = sub.ease or {}
 						sub.ease.update({ k:v for k,v in args.ease.items()
 							if k not in sub.ease })
-					if (r := sub.range) and (x := args.num):
+					if sub.range is not None and args.num is not None:
+						r, x = sub.range, args.num
 						sub.range = tuple(l * x if l is not None else None for l in r)
 				elif sub.func == cmd_render and sub.fps and args.num:
 					sub.fps *= args.num
