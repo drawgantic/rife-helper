@@ -67,6 +67,9 @@ def cmd_weigh(args: argparse.Namespace) -> None:
 	print(msg)
 
 def cmd_generate(args: argparse.Namespace) -> None:
+	if args.range is not None and args.num is not None:
+		r, x = args.range, args.num
+		args.range = cmn.Range(l * x if l is not None else None for l in r)
 	if args.load:
 		backup = args.load if type(args.load) == cmn.Path else args.backup
 		cmn.Frames(backup, args.range).copy_to(args.dir)
@@ -188,9 +191,12 @@ def cmd_extract(args: argparse.Namespace) -> None:
 		args.dir + f'%05d.000{cmn.Frame.img}' ])
 
 def cmd_render(args: argparse.Namespace) -> None:
+	if args.fps is not None and args.num is not None:
+		args.fps *= args.num
 	source = args.name if args.source is None else args.source
 	frames = cmn.Frames(args.dir)
-	fps = (len(frames) / args.time) if args.time else args.fps
+
+	fps = (len(frames) / args.time) if args.time is not None else args.fps
 	ainfo = None
 	if os.path.isfile(source):
 		probe = cmn.ffprobe(source)
@@ -259,17 +265,10 @@ def cmd_run(args: argparse.Namespace) -> None:
 				input(f'Press a key to continue')
 			else:
 				sub = parser.parse_args(words)
-				if sub.func == cmd_generate:
-					sub.backup = args.backup
-					if args.ease is not None:
-						sub.ease = sub.ease or {}
-						sub.ease.update({ k:v for k,v in args.ease.items()
-							if k not in sub.ease })
-					if sub.range is not None and args.num is not None:
-						r, x = sub.range, args.num
-						sub.range = tuple(l * x if l is not None else None for l in r)
-				elif sub.func == cmd_render and sub.fps and args.num:
-					sub.fps *= args.num
+				if sub.func == cmd_generate and args.ease is not None:
+					sub.ease = sub.ease or {}
+					sub.ease.update({ k:v for k,v in args.ease.items()
+						if k not in sub.ease })
 				kw = vars(sub)
 				kw.update({ k:v for k,v in vars(args).items()
 					if k in kw and kw[k] is None })
@@ -365,6 +364,7 @@ opt(cmd, '-a', '--approx', 'Frame approximation threshold', metavar='0', type=ea
 opt(cmd, '-p', '--pause', 'Pause before certain events', action='store_const', const=True)
 opt(cmd, '-s', '--single', 'Generate a single frame', action='store_true')
 opt(cmd, '-o', '--open', 'Use a half-open interval', action='store_true')
+opt(cmd, '-x', '--num', 'Range multiplier', metavar='0', type=eas.Float)
 
 cmd = subcommand('ren', cmd_render, 'Render a video from frames')
 cmd.add_argument('name', help='Video file name', nargs='?')
@@ -372,6 +372,7 @@ opt(cmd, '-f', '--fps', 'Frames per second', metavar='0', type=eas.Float)
 opt(cmd, '-t', '--time', 'Time in seconds (supersedes fps)', metavar='0', type=eas.Float)
 opt(cmd, '-l', '--loop', 'Leave out the last frame', action='store_true')
 opt(cmd, '-s', '--source', 'Reference video', metavar='X')
+opt(cmd, '-x', '--num', 'FPS multiplier', metavar='0', type=eas.Float)
 
 cmd = subcommand('run', cmd_run, 'Run a set of commands from a text file', True)
 cmd.add_argument('text', help='Text file name')
