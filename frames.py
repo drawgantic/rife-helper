@@ -221,12 +221,24 @@ def cmd_render(args: argparse.Namespace) -> None:
 		frames[-1].rename(frames[-1].idx, temp=False)
 
 def cmd_rm(args: argparse.Namespace) -> None:
-	for a in [s.split(':') for s in args.nums]:
-		if len(a) >= 2:
-			for x in cmn.Frames(args.dir, (float(a[0]), float(a[1]))):
-				x.remove()
-		elif len(a) >= 1:
-			cmn.Frame(float(a[0]), args.dir).remove()
+	if args.whitelist:
+		# remove list items from list of all frames, then delete leftovers
+		frames = cmn.Frames(args.dir, args.range)
+		for a in [s.split(':') for s in args.nums]:
+			if len(a) >= 2:
+				for x in cmn.Frames(args.dir, (float(a[0]), float(a[1]))):
+					frames.remove(x)
+			elif len(a) >= 1:
+				frames.remove(cmn.Frame(float(a[0]), args.dir))
+		for x in frames:
+			x.remove()
+	else:
+		for a in [s.split(':') for s in args.nums]:
+			if len(a) >= 2:
+				for x in cmn.Frames(args.dir, (float(a[0]), float(a[1]))):
+					x.remove()
+			elif len(a) >= 1:
+				cmn.Frame(float(a[0]), args.dir).remove()
 
 def cmd_mv(args: argparse.Namespace) -> None:
 	frames, indexes = [], []
@@ -318,8 +330,9 @@ cmd.add_argument('num', help='Factor', type=eas.Float, nargs='?')
 cmd = subcommand('+', cmd_add, 'Perform addition on frame indexes', True)
 cmd.add_argument('num', help='Addend', type=eas.Float, nargs='?')
 
-cmd = subcommand('rm', cmd_rm, 'Remove specific frames')
+cmd = subcommand('rm', cmd_rm, 'Remove specific frames', True)
 cmd.add_argument('nums', help='Index or range of indexes in low:high form', nargs='+')
+opt(cmd, '-w', '--whitelist', 'Remove all except specified', action='store_true')
 
 cmd = subcommand('mv', cmd_mv, 'Rename specific frames')
 cmd.add_argument('nums', help='Number pairs in `from:to` form', nargs='+', type=Pair)

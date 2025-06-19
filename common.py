@@ -34,6 +34,9 @@ class Frame:
 	def __lt__(self: Self, other: Self) -> bool:
 		return (self.idx < other.idx)
 
+	def __eq__(self: Self, other: Self) -> bool:
+		return (self.idx == other.idx)
+
 	def rename(self: Self, f: float, temp = False) -> None:
 		self.idx = f
 		s = (Frame.fmt % f) + ('.' if temp else '')
