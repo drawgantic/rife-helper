@@ -187,7 +187,8 @@ def cmd_extract(args: argparse.Namespace) -> None:
 	# extract frames
 	if not os.path.exists(args.dir):
 		os.mkdir(args.dir, 0o755)
-	subprocess.run([ 'ffmpeg', '-i', vid, '-start_number', '0',
+	offset = f'{args.offset if args.offset is not None else 0}'
+	subprocess.run([ 'ffmpeg', '-i', vid, '-start_number', offset,
 		args.dir + f'%05d.000{cmn.Frame.img}' ])
 
 def cmd_render(args: argparse.Namespace) -> None:
@@ -291,6 +292,9 @@ def cmd_run(args: argparse.Namespace) -> None:
 ################################################################################
 # Argparse Setup
 
+parser = argparse.ArgumentParser(description='Motion interpolation helper')
+subparsers = parser.add_subparsers(required=True)
+
 def Pair(s: str) -> tuple[float, float]:
 	t = tuple(map(float, s.split(':')))
 	if len(t) != 2:
@@ -318,11 +322,9 @@ def subcommand(name, fn, hlp, rnge=False, **kwargs) -> argparse.ArgumentParser:
 			metavar='1:2', type=Range)
 	return cmd
 
-parser = argparse.ArgumentParser(description='Motion interpolation helper')
-subparsers = parser.add_subparsers(required=True)
-
 cmd = subcommand('ext', cmd_extract, 'Extract frames from a video')
 cmd.add_argument('name', help='Video file name')
+opt(cmd, '-o', '--offset', 'Index offset', metavar='0', type=eas.Float)
 
 cmd = subcommand('x', cmd_multiply, 'Perform multiplication on frame indexes', True)
 cmd.add_argument('num', help='Factor', type=eas.Float, nargs='?')
