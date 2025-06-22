@@ -156,7 +156,7 @@ def cmd_generate(args: argparse.Namespace) -> None:
 				x.key = (abs(f - round(f)) <= erp.approx)
 			for x in frames[1:-1]:
 				x.rename(x.idx, temp=False)
-			if args.pause:
+			if args.pause and ease.func != eas.Easing.linear:
 				input('\nReindexed for easing. Press a key to continue\n')
 
 			for i in range(len(frames) - 1):
