@@ -152,14 +152,22 @@ def cmd_generate(args: argparse.Namespace) -> None:
 				process(lo, hi)
 		else:
 			lo, hi = frames[0], frames[-1]
-			lo.pct, hi.pct = 0.0, 1.0
-			ease.set_idx_range(lo.idx, hi.idx)
+			if args.range is not None:
+				r: cmn.Range = args.range
+				ease.set_idx_range(
+					r[0] if r[0] is not None else lo.idx,
+					r[1] if r[1] is not None else hi.idx,
+				)
+				lo.pct, hi.pct = ease.pct_from_idx(lo.idx), ease.pct_from_idx(hi.idx)
+			else:
+				ease.set_idx_range(lo.idx, hi.idx)
+				lo.pct, hi.pct = 0.0, 1.0
 
 			# reindex keyframes to conform to the overarching easing
 			# give them temporary names first to avoid naming collisions
 			for x in frames[1:-1]:
-				x.pct = ease.to_pct(x.idx)
-				f = ease.to_idx(x.pct)
+				x.pct = ease.pct_from_lin(x.idx)
+				f = ease.idx_from_pct(x.pct)
 				x.rename(f, temp=True)
 				x.key = (abs(f - round(f)) <= erp.approx)
 			for x in frames[1:-1]:

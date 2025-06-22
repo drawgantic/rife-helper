@@ -151,7 +151,7 @@ class Interpolator:
 
 	def gen_frame(self: Self, lo: Frame, hi: Frame) -> Frame:
 		pct = (lo.pct + hi.pct) / 2
-		f = self.ease.to_idx(pct)
+		f = self.ease.idx_from_pct(pct)
 		mid = Frame(f, lo.head, pct=pct)
 		mid.key = (abs(f - round(f)) <= self.approx)
 		def fmt(num):

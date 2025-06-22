@@ -1,4 +1,4 @@
-from math import acos, asin, sqrt, floor, pi
+from math import cos, sin, acos, asin, sqrt, floor, pi
 from typing import Any, Self, Callable
 
 acc = float.fromhex('0x1p48') # for rounding off small inaccuracies
@@ -46,10 +46,20 @@ class Easing:
 		self.slope = hi - lo
 		self.intercept = lo
 
-	def to_idx(self: Self, pct: float) -> float:
+	def idx_from_pct(self: Self, pct: float) -> float:
 		return self.slope * self.func(self, pct) + self.intercept
 
-	def to_pct(self: Self, idx: float) -> float:
+	def pct_from_idx(self: Self, idx: float) -> float:
+		inverse = Easing.invs[self.func.__name__]
+		idx = self.pct_from_lin(idx)
+		if idx <= 0:
+			return 0
+		if idx >= 1:
+			return 1
+		return inverse(self, idx)
+
+	def pct_from_lin(self: Self, idx: float) -> float:
+		'''Get the percentage from a linear index'''
 		return (idx - self.intercept) / self.slope
 
 	def info(self: Self) -> str:
@@ -80,21 +90,48 @@ class Easing:
 	def sine_in(self: Self, x: float) -> float:
 		return 2 * acos(1 - x) / pi
 
+	def inv_sine_in(self: Self, x: float) -> float:
+		return 1 - cos((x * pi) / 2)
+
 	def sine_out(self: Self, x: float) -> float:
 		return 2 * asin(x) / pi
 
+	def inv_sine_out(self: Self, x: float) -> float:
+		return sin((x * pi) / 2)
+
 	def sine_in_out(self: Self, x: float) -> float:
-		return acos(1 - 2 * x) / pi
+		return acos(1 - (2 * x)) / pi
+
+	def inv_sine_in_out(self: Self, x: float) -> float:
+		return -(cos(pi * x) - 1) / 2
 
 	def linear(self: Self, x: float) -> float:
 		return x
 
 	funcs: dict[str, Callable[[Self, float], float]] = {
 		'quad': quad,
+		'inv.quad': root,
 		'root': root,
-		'lin': linear,
+		'inv.root': quad,
 		'sin': sine_in_out,
+		'inv.sin': inv_sine_in_out,
 		'sin.in': sine_in,
+		'inv.sin.in': inv_sine_in,
 		'sin.out': sine_out,
+		'inv.sin.out': inv_sine_out,
 		'sin.inout': sine_in_out,
+		'inv.sin.inout': inv_sine_in_out,
+		'lin': linear,
+	}
+
+	invs: dict[str, Callable[[Self, float], float]] = {
+		'quad': root,
+		'root': quad,
+		'sine_in': inv_sine_in,
+		'inv_sine_in': sine_in,
+		'sine_out': inv_sine_out,
+		'inv_sine_out': sine_out,
+		'sine_in_out': inv_sine_in_out,
+		'inv_sine_in_out': sine_in_out,
+		'linear': linear,
 	}
