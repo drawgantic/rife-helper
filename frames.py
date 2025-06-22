@@ -261,7 +261,9 @@ def cmd_run(args: argparse.Namespace) -> None:
 	# text commands are just like normal commands, minus the call to this file
 	with open(args.text, 'r') as f:
 		lines = f.read().splitlines()
-		for line in lines[args.slice or slice(None)]:
+		slc: slice = args.slice if args.slice is not None else slice(None)
+		o = slc.start if slc.start is not None else 0
+		for i, line in enumerate(lines[slc]):
 			c = line.find('#')
 			line = line[:c if c >= 0 else None].strip()
 			ptrn = r'(\"[^\"]*\"|[^ ]+)' # text between double quotes or between spaces
@@ -275,7 +277,7 @@ def cmd_run(args: argparse.Namespace) -> None:
 			elif words[0] == 'model' and len(words) == 2:
 				args.model = words[1]
 			elif words[0] == 'pause':
-				input(f'Press a key to continue')
+				input(f'Pause at line {i + 1 + o}: Press a key to continue')
 			else:
 				sub = parser.parse_args(words)
 				if sub.func == cmd_generate and args.ease is not None:
