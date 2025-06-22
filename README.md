@@ -71,10 +71,11 @@ Many sub-commands also accept the argument `-r, --range 1:2`, which specifies a 
 - `ranges` Frame index ranges
 
 --------------------------------------------------------------------------------
-### `gen [-h] [-d X] [-r 1:2] [-j 0] [-l [X]] [-m X] [-e [X]] [-z] [-a 0] [-p] [-s] [-o] [-x 0]`
+### `gen [-h] [-d X] [-r 1:2] [-j 0] [-l [X]] [-c] [-m X] [-e [X]] [-z] [-a 0] [-p] [-s] [-o] [-x 0]`
 ### Interpolate between existing frames
 - `-j, --jobs 0` Max number of concurrent processes
 - `-l, --load [X]` Reset frames from backup before starting
+- `-c, --clear` Delete all intermediate frames
 - `-m, --model X` Flow model
 - `-e [X], --ease [X]` Easing parameters. Use ":" for arg separation
   - `{quad, root, sin.[in, out, inout]}` Algorithms (default: quad)

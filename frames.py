@@ -77,6 +77,14 @@ def cmd_generate(args: argparse.Namespace) -> None:
 			input(f'\nBackup loaded. Press a key to continue\n')
 
 	frames = cmn.Frames(args.dir, args.range)
+
+	if args.clear and len(frames) > 2:
+		for x in frames[1:-1]:
+			x.remove()
+		frames[:] = [frames[0], frames[-1]]
+		if args.pause:
+			input(f'\nIntermediate frames deleted. Press a key to continue\n')
+
 	if args.open:
 		old_end = frames[-2].idx
 		frames[-2].rename(frames[-1].idx - 1)
@@ -371,6 +379,7 @@ cmd = subcommand('gen', cmd_generate, 'Interpolate between existing frames', Tru
 opt(cmd, '-j', '--jobs', 'Max number of concurrent processes', metavar='0', type=int)
 opt(cmd, '-l', '--load', 'Reset frames from backup before starting', type=cmn.Path,
 	metavar='X', nargs='?', const=True)
+opt(cmd, '-c', '--clear', 'Delete all intermediate frames', action='store_true')
 opt(cmd, '-m', '--model', 'Flow model', metavar='X')
 opt(cmd, '-e', '--ease', 'Easing parameters. Use ":" for arg separation\n'
 	'{quad, root, sin.[in, out, inout]}  Algorithms (default: quad)\n'
