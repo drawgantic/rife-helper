@@ -24,7 +24,7 @@ class Frame:
 	img = Ext('.png')
 	fmt = '%09.3f' + img
 
-	def __init__(self: Self, f: float, head: Path, **kwargs) -> None:
+	def __init__(self: Self, head: Path, f: float, **kwargs) -> None:
 		self.idx = f
 		self.head = head
 		self.pct = float(kwargs.get('pct', 1.0))
@@ -81,7 +81,7 @@ class Frames(list[Frame]):
 		for i, tail in enumerate(sorted(os.listdir(head))):
 			name, ext = os.path.splitext(tail)
 			if ext == Frame.img:
-				frames.append(Frame(float_or(name, i), head, tail=tail))
+				frames.append(Frame(head, float_or(name, i), tail=tail))
 		if len(frames) < 2:
 			return super().__init__(frames)
 		if r:
@@ -152,7 +152,7 @@ class Interpolator:
 	def gen_frame(self: Self, lo: Frame, hi: Frame) -> Frame:
 		pct = (lo.pct + hi.pct) / 2
 		f = self.ease.idx_from_pct(pct)
-		mid = Frame(f, lo.head, pct=pct)
+		mid = Frame(lo.head, f, pct=pct)
 		mid.key = (abs(f - round(f)) <= self.approx)
 		def fmt(num):
 			return f'%.{ 6 - len(str(int(num))) }f' % num

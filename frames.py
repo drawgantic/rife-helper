@@ -246,7 +246,7 @@ def cmd_rm(args: argparse.Namespace) -> None:
 				for x in cmn.Frames(args.dir, (float(a[0]), float(a[1]))):
 					frames.remove(x)
 			elif len(a) >= 1:
-				frames.remove(cmn.Frame(float(a[0]), args.dir))
+				frames.remove(cmn.Frame(args.dir, float(a[0])))
 		for x in frames:
 			x.remove()
 	else:
@@ -255,12 +255,12 @@ def cmd_rm(args: argparse.Namespace) -> None:
 				for x in cmn.Frames(args.dir, (float(a[0]), float(a[1]))):
 					x.remove()
 			elif len(a) >= 1:
-				cmn.Frame(float(a[0]), args.dir).remove()
+				cmn.Frame(args.dir, float(a[0])).remove()
 
 def cmd_mv(args: argparse.Namespace) -> None:
 	frames, indexes = [], []
 	for arg in args.nums:
-		frames.append(cmn.Frame(arg[0], args.dir))
+		frames.append(cmn.Frame(args.dir, arg[0]))
 		indexes.append(arg[1])
 
 	if args.copy:
