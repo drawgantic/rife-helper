@@ -195,8 +195,9 @@ def cmd_generate(args: argparse.Namespace) -> None:
 				process(frames[i], frames[i + 1])
 		for t in threads:
 			t.join()
-		for x in frames:
-			x.prune()
+		if not args.single:
+			for x in frames:
+				x.prune()
 		if erp.error:
 			sys.exit('RIFE encountered an error. Aborting')
 
