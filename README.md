@@ -39,16 +39,18 @@ Many sub-commands also accept the argument `-r, --range 1:2`, which specifies a 
 ### Reindex frames in alphabetical order
 
 --------------------------------------------------------------------------------
-### `save [-h] [-d X] [-r 1:2] [-z] [-o 0] [backup]`
+### `save [-h] [-d X] [-b X] [-z] [-o 0] [nums ...]`
 ### Save the state of frames to a backup folder
-- `backup` Backup folder (default: `./backup/`)
+- `nums` Index or closed interval of indexes in `low:high` form
+- `-b, --backup X` Backup folder (default: `./backup/`)
 - `-z, --lazy` Copy only, do not clean range beforehand
 - `-o, --offset 0` Index offset
 
 --------------------------------------------------------------------------------
-### `load [-h] [-d X] [-r 1:2] [-z] [-o 0] [backup]`
+### `load [-h] [-d X] [-b X] [-z] [-o 0] [nums ...]`
 ### Load a state of frames from a backup folder
-- `backup` Backup folder (default: `./backup/`)
+- `nums` Index or closed interval of indexes in `low:high` form
+- `-b, --backup X` Backup folder (default: `./backup/`)
 - `-z, --lazy` Copy only, do not clean range beforehand
 - `-o, --offset 0` Index offset
 

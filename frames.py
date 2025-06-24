@@ -32,10 +32,26 @@ def cmd_clean(args: argparse.Namespace) -> None:
 		fn(i, x)
 
 def cmd_save(args: argparse.Namespace) -> None:
-	cmn.Frames(args.dir, args.range).copy_to(args.backup, args.lazy, args.offset)
+	if len(args.nums) == 0:
+		cmn.Frames(args.dir, (None, None)).copy_to(args.backup, args.lazy, args.offset)
+		return
+	for a in [s.split(':') for s in args.nums]:
+		if len(a) >= 2:
+			r = (float(a[0]), float(a[1]))
+			cmn.Frames(args.dir, r).copy_to(args.backup, args.lazy, args.offset)
+		elif len(a) >= 1:
+			cmn.Frame(args.dir, float(a[0])).copy(args.backup, args.offset)
 
 def cmd_load(args: argparse.Namespace) -> None:
-	cmn.Frames(args.backup, args.range).copy_to(args.dir, args.lazy, args.offset)
+	if len(args.nums) == 0:
+		cmn.Frames(args.backup, (None, None)).copy_to(args.dir, args.lazy, args.offset)
+		return
+	for a in [s.split(':') for s in args.nums]:
+		if len(a) >= 2:
+			r = (float(a[0]), float(a[1]))
+			cmn.Frames(args.backup, r).copy_to(args.dir, args.lazy, args.offset)
+		elif len(a) >= 1:
+			cmn.Frame(args.backup, float(a[0])).copy(args.dir, args.offset)
 
 def cmd_prune(args: argparse.Namespace) -> None:
 	frames = cmn.Frames(args.dir, args.range)
@@ -360,13 +376,15 @@ opt(cmd, '-c', '--copy', 'Copy files instead of moving them', action='store_true
 
 cmd = subcommand('sort', cmd_sort, 'Reindex frames in alphabetical order', True)
 
-cmd = subcommand('save', cmd_save, 'Save the state of frames to a backup folder', True)
-cmd.add_argument('backup', help='Backup folder', type=cmn.Path, nargs='?')
+cmd = subcommand('save', cmd_save, 'Save the state of frames to a backup folder')
+cmd.add_argument('nums', help='Index or range of indexes in low:high form', nargs='*')
+opt(cmd, '-b', '--backup', 'Backup folder', metavar='X', type=cmn.Path)
 opt(cmd, '-z', '--lazy', 'Copy only, do not clean range beforehand', action='store_true')
 opt(cmd, '-o', '--offset', 'Index offset', metavar='0', type=eas.Float)
 
-cmd = subcommand('load', cmd_load, 'Load a state of frames from a backup folder', True)
-cmd.add_argument('backup', help='Backup folder', type=cmn.Path, nargs='?')
+cmd = subcommand('load', cmd_load, 'Load a state of frames from a backup folder')
+cmd.add_argument('nums', help='Index or range of indexes in low:high form', nargs='*')
+opt(cmd, '-b', '--backup', 'Backup folder', metavar='X', type=cmn.Path)
 opt(cmd, '-z', '--lazy', 'Copy only, do not clean range beforehand', action='store_true')
 opt(cmd, '-o', '--offset', 'Index offset', metavar='0', type=eas.Float)
 
