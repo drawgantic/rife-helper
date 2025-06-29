@@ -343,7 +343,10 @@ def Range(s: str) -> cmn.Range:
 	return (t[0], t[1])
 
 def Slice(s: str) -> slice:
-	return slice(*(int(x) if x is not None else None for x in s.split(':')))
+	if s[0] == '[' and s[-1] == ']':
+		# if first arg is negative, argparse will confuse slice for an optional arg
+		s = s[1:-1]
+	return slice(*(int(x) if x != '' else None for x in s.split(':')))
 
 def opt(p: argparse.ArgumentParser, s: str, l: str, h: str, **kwargs) -> None:
 	p.add_argument(s, l, help=h, **kwargs)
