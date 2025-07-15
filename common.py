@@ -48,11 +48,11 @@ class Frame:
 
 	def copy(self: Self, arg: Path|float, offset: float|None = None) -> None:
 		o = offset is not None
-		new: str
-		if type(arg) == Path:
-			new = arg + (Frame.fmt % (self.idx + offset) if o else self.tail)
-		elif type(arg) == float:
-			new = self.head + (Frame.fmt % (arg + (offset if o else 0)))
+		new = (
+			arg + (Frame.fmt % (self.idx + offset) if o else self.tail)
+		) if type(arg) == Path else (
+			self.head + (Frame.fmt % (arg + (offset if o else 0)))
+		) if type(arg) == float or type(arg) == int else ''
 
 		try:
 			shutil.copyfile(self.head + self.tail, new)
